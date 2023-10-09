@@ -16,12 +16,16 @@ contract GovernorContract is
   GovernorVotesQuorumFraction,
   GovernorTimelockControl
 {
+
+  address public s_admin;
+
   constructor(
     IVotes _token,
     TimelockController _timelock,
     uint256 _quorumPercentage,
     uint256 _votingPeriod,
-    uint256 _votingDelay
+    uint256 _votingDelay,
+    address _admin
   )
     Governor("GovernorContract")
     GovernorSettings(
@@ -32,7 +36,9 @@ contract GovernorContract is
     GovernorVotes(_token)
     GovernorVotesQuorumFraction(_quorumPercentage)
     GovernorTimelockControl(_timelock)
-  {}
+  {
+    s_admin = _admin;
+  }
 
   function votingDelay()
     public
@@ -87,6 +93,7 @@ contract GovernorContract is
     bytes[] memory calldatas,
     string memory description
   ) public override(Governor, IGovernor) returns (uint256) {
+    require(msg.sender == s_admin, "You are not the admin");
     return super.propose(targets, values, calldatas, description);
   }
 
@@ -98,6 +105,17 @@ contract GovernorContract is
   {
     return super.proposalThreshold();
   }
+
+  function queue(
+    address[] memory targets,
+    uint256[] memory values,
+    bytes[] memory calldatas,
+    bytes32 descriptionHash
+) public virtual override(GovernorTimelockControl) returns (uint256) {
+
+  require(msg.sender == s_admin, "Only the admin can queue");
+  return super.queue(targets, values, calldatas, descriptionHash);
+}
 
   function _execute(
     uint256 proposalId,

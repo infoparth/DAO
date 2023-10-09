@@ -3,12 +3,14 @@ import { DeployFunction } from "hardhat-deploy/types"
 import verify from "../helper-functions"
 import { networkConfig, developmentChains, accountArray} from "../helper-hardhat-config"
 import { ethers } from "hardhat"
+import { log } from "console"
 
 const deployGovernanceToken: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   // @ts-ignore
   const { getNamedAccounts, deployments, network } = hre
   const { deploy, log } = deployments
   const { deployer } = await getNamedAccounts()
+  const accountNonce = await ethers.provider.getTransactionCount(deployer, "latest");
   log(`---------------Deployer, ${deployer}---------------`)
   log("----------------------------------------------------")
   log("Deploying GovernanceToken and waiting for confirmations...")
@@ -16,6 +18,7 @@ const deployGovernanceToken: DeployFunction = async function (hre: HardhatRuntim
     from: deployer,
     args: [],
     log: true,
+    nonce: accountNonce,
     // we need to wait if on a live network so we can verify properly
     waitConfirmations: networkConfig[network.name].blockConfirmations || 1,
   })
@@ -47,6 +50,7 @@ const mintToken = async (governanceTokenAddress: string, owner: string, mintAcco
   const size = mintAccounts.length;
   for(let i = 0; i < size; i++){
 
+    log(`The iteration number ${i}`)
     const mintRespose = await governanceToken.safeMint(mintAccounts[i], {from: owner})
     await mintRespose.wait(1);
 
