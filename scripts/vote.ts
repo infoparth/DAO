@@ -5,27 +5,27 @@ import { moveBlocks } from "../utils/move-blocks"
 
 
 async function main() {
-  const proposals = JSON.parse(fs.readFileSync(proposalsFile, "utf8"))
+  // const proposals = JSON.parse(fs.readFileSync(proposalsFile, "utf8"))
   // Get the last proposal for the network. You could also change it for your index
-  const proposalId = proposals[network.config.chainId!].at(-1);
+  const proposalId = "76604080415340475292879067264619419456836867107412988999068860044160170368391"
   // 0 = Against, 1 = For, 2 = Abstain for this example
   const voteWay = 1
-  const reason = "I lika do da cha cha"
+  const reason = "I support the protocol"
   await vote(proposalId, voteWay, reason)
 }
 
 // 0 = Against, 1 = For, 2 = Abstain for this example
 export async function vote(proposalId: string, voteWay: number, reason: string) {
   console.log("Voting...")
-  const governor = await ethers.getContract("GovernorContract")
+  const governor = await ethers.getContractAt("GovernorContract", "0x09148A0f89737CE635b46a41fd85c0A2248812BF")
   const voteTx = await governor.castVoteWithReason(proposalId, voteWay, reason)
   const voteTxReceipt = await voteTx.wait(1)
   console.log(voteTxReceipt.events[0].args.reason)
   const proposalState = await governor.state(proposalId)
   console.log(`Current Proposal State: ${proposalState}`)
-  if (developmentChains.includes(network.name)) {
-    await moveBlocks(VOTING_PERIOD + 1)
-  }
+  // if (developmentChains.includes(network.name)) {
+  //   await moveBlocks(VOTING_PERIOD + 1)
+  // }
 }
 
 main()

@@ -19,6 +19,14 @@ contract GovernorContract is
 
   address public s_admin;
 
+  modifier onlyAdmin{
+    require(msg.sender == s_admin, "Only the admin can call this function");
+    _;
+
+  }
+
+  event adminChanged(address indexed prevAdmin, address indexed newAdmin,   uint indexed time);
+
   constructor(
     IVotes _token,
     TimelockController _timelock,
@@ -58,6 +66,10 @@ contract GovernorContract is
     return super.votingPeriod();
   }
 
+  function setVotingPeriod(uint256 newVotingPeriod) public virtual override onlyGovernance {
+    _setVotingPeriod(newVotingPeriod);
+}
+
   // The following functions are overrides required by Solidity.
 
   function quorum(uint256 blockNumber)
@@ -92,8 +104,8 @@ contract GovernorContract is
     uint256[] memory values,
     bytes[] memory calldatas,
     string memory description
-  ) public override(Governor, IGovernor) returns (uint256) {
-    require(msg.sender == s_admin, "You are not the admin");
+  ) public override(Governor, IGovernor) onlyAdmin returns (uint256) {
+    
     return super.propose(targets, values, calldatas, description);
   }
 
@@ -123,7 +135,7 @@ contract GovernorContract is
     uint256[] memory values,
     bytes[] memory calldatas,
     bytes32 descriptionHash
-  ) internal override(Governor, GovernorTimelockControl) {
+  ) internal override(Governor, GovernorTimelockControl) onlyAdmin{
     super._execute(proposalId, targets, values, calldatas, descriptionHash);
   }
 
@@ -132,7 +144,7 @@ contract GovernorContract is
     uint256[] memory values,
     bytes[] memory calldatas,
     bytes32 descriptionHash
-  ) internal override(Governor, GovernorTimelockControl) returns (uint256) {
+  ) internal override(Governor, GovernorTimelockControl) onlyAdmin returns (uint256) {
     return super._cancel(targets, values, calldatas, descriptionHash);
   }
 
@@ -152,5 +164,14 @@ contract GovernorContract is
     returns (bool)
   {
     return super.supportsInterface(interfaceId);
+  }
+
+  function changeAdmin(address _newAdmin) 
+  public onlyAdmin{
+
+    address _oldAdmin = s_admin;
+    s_admin = _newAdmin;
+    emit adminChanged(_oldAdmin, _newAdmin, block.timestamp);
+
   }
 }

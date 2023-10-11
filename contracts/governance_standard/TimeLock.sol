@@ -18,6 +18,6 @@ contract TimeLock is TimelockController {
     uint256 minDelay,
     address[] memory proposers,
     address[] memory executors,
-    address admin
-  ) TimelockController(minDelay, proposers, executors, admin) {}
+    address _admin
+  ) TimelockController(minDelay, proposers, executors, _admin) {}
 }

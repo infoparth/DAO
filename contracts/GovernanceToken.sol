@@ -14,7 +14,7 @@ contract GovernanceToken is ERC721, Ownable, EIP712, ERC721Votes {
 
     string _baseTokenURI = "ipfs://Qme4irhWzpLxbCUB5FsTPQkMcrojVPuWLKJGJ6WVtDk8uN";
 
-    constructor() ERC721("VoteHCS", "HCS") EIP712("HCSDAO", "1") {}
+    constructor() ERC721("voteHCS", "HCS") EIP712("HCS_DAO", "1") {}
 
     function setBaseURI(string memory _newBaseURI) public onlyOwner{
         _baseTokenURI = _newBaseURI;

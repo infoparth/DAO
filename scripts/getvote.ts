@@ -1,17 +1,13 @@
 import { ethers, network } from "hardhat"
 
-const tokenAddr = "0x73234AB86eb2F6a6149d5658d915fB556F471F83"
+const tokenAddr = "0xd43da1c6ce766a7639032372cf6f40618b69b60c"
 export async function returnRate(){
 
-    const token = await ethers.getContractAt("Box", tokenAddr)
+    const token = await ethers.getContractAt("GovernorContract", tokenAddr)
 
-    const set = await token.retrieve() 
-
-    const own = await token.owner()
+    const set = await token.votingPeriod() 
 
     console.log(`Value of Rate = ${set}`)
-
-    console.log(`owner = ${own}`)
 }
 
 returnRate()

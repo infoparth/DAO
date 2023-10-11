@@ -20,7 +20,9 @@ const config: HardhatUserConfig = {
     polygon_mumbai: {
       url: "https://rpc-mumbai.maticvigil.com",
       accounts: [PRIVATE_KEY],
-      // blockGasLimit: 60000000 // Network block gasLimit
+      gas: 2100000,
+      gasPrice: 8000000000
+      // blockGasLimit: 600000000000 // Network block gasLimit
     }
   },
   etherscan: {
